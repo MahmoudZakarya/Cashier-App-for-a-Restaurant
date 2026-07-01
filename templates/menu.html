@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  .modal-content,
+  .modal-content h5,
+  .modal-content label {
+    color: #0d1b2a !important;
+    font-weight: 600;
+  }
+
+  .modal-content input,
+  .modal-content textarea,
+  .modal-content select {
+    background-color: #0d1b2a !important;
+    color: #ffffff !important;
+    border: 1px solid #0d1b2a !important;
+  }
+
+  .modal-content input::placeholder,
+  .modal-content textarea::placeholder {
+    color: #e8e8e8 !important;
+  }
+
+
+</style>
+
+<div class="container-box">
+  <h3 class="mb-3">القائمة</h3>
+
+  <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addMealModal">
+    إضافة وجبة جديدة
+  </button>
+
+  <table class="table table-bordered table-striped text-center">
+    <thead>
+      <tr>
+        <th>الكود</th>
+        <th>الوجبة</th>
+        <th>الوصف</th>
+        <th>السعر</th>
+        <th>التكلفة</th>
+        <th>الربح</th>
+        <th>إجراءات</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for meal in meals %}
+      <tr>
+        <td>{{ meal.id }}</td>
+        <td>{{ meal.name }}</td>
+        <td>{{ meal.description }}</td>
+        <td>{{ meal.sale_price }} جنية</td>
+        <td>{{ meal.cost }} جنية</td>
+        <td>{{ meal.profit }} جنية</td>
+        <td class="operations-wrapper">
+          <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editMealModal{{ meal.id }}">
+            تعديل
+          </button>
+          <a href="{{ url_for('delete_meal', meal_id=meal.id) }}" class="btn btn-sm btn-danger"
+            onclick="return confirm('هل أنت متأكد من الحذف؟')">حذف</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+
+<!-- =================== ADD MEAL MODAL =================== -->
+<div class="modal fade" id="addMealModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form action="{{ url_for('add_meal') }}" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title">إضافة وجبة جديدة</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+
+          <label>اسم الوجبة</label>
+          <input name="name" required class="form-control">
+
+          <label class="mt-2">الوصف</label>
+          <textarea name="description" class="form-control" required></textarea>
+
+          <label class="mt-2">السعر</label>
+          <input name="sale_price" type="number" min="0" step="0.01" class="form-control" required>
+
+          <hr>
+          <h6>المكونات</h6>
+
+          <table class="table table-sm" id="components-table-new">
+            <thead>
+              <tr>
+                <th>الصنف</th>
+                <th width="120">الكمية</th>
+                <th width="50"></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+
+          <button type="button" class="btn btn-secondary btn-sm" onclick="addRowNew()">إضافة مكون</button>
+
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-primary" type="submit">حفظ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function addRowNew() {
+    const table = document.querySelector("#components-table-new tbody");
+    const row = `
+      <tr>
+        <td>
+          <select name="product_id[]" class="form-select" required>
+            {% for product in products %}
+            <option value="{{ product.id }}">{{ product.name }}</option>
+            {% endfor %}
+          </select>
+        </td>
+        <td><input type="number" name="quantity[]" min="0.001" step="0.001" class="form-control" required></td>
+        <td><button type="button" class="btn btn-danger btn-sm" onclick="this.closest('tr').remove()">✖</button></td>
+      </tr>`;
+    table.insertAdjacentHTML("beforeend", row);
+  }
+</script>
+
+
+<!-- =================== EDIT MEAL MODALS =================== -->
+{% for meal in meals %}
+<div class="modal fade" id="editMealModal{{ meal.id }}" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <form action="{{ url_for('edit_meal', meal_id=meal.id) }}" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title">تعديل وجبة: {{ meal.name }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+
+          <label>اسم الوجبة</label>
+          <input name="name" value="{{ meal.name }}" required class="form-control">
+
+          <label class="mt-2">الوصف</label>
+          <textarea name="description" class="form-control" required>{{ meal.description }}</textarea>
+
+          <label class="mt-2">السعر</label>
+          <input name="sale_price" type="number" min="0" step="0.01" value="{{ meal.sale_price }}" class="form-control" required>
+
+          <hr>
+          <h6>المكونات</h6>
+
+          <table class="table table-sm" id="components-table-{{ meal.id }}">
+            <thead>
+              <tr>
+                <th>الصنف</th>
+                <th width="120">الكمية</th>
+                <th width="50"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for comp in meal.components %}
+              <tr>
+                <td>
+                  <select name="product_id[]" class="form-select" required>
+                    {% for product in products %}
+                    <option value="{{ product.id }}" {% if comp.product_id == product.id %}selected{% endif %}>
+                      {{ product.name }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                </td>
+                <td><input type="number" name="quantity[]" value="{{ comp.quantity }}" min="0.001" step="0.001" class="form-control" required></td>
+                <td><button type="button" class="btn btn-danger btn-sm" onclick="this.closest('tr').remove()">✖</button></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <button type="button" class="btn btn-secondary btn-sm" onclick="addRow{{ meal.id }}()">إضافة مكون</button>
+
+<script>
+function addRow{{ meal.id }}() {
+  const table = document.querySelector("#components-table-{{ meal.id }} tbody");
+  const row = `
+<tr>
+  <td>
+    <select name="product_id[]" class="form-select" required>
+      {% for product in products %}
+      <option value="{{ product.id }}">{{ product.name }}</option>
+      {% endfor %}
+    </select>
+  </td>
+  <td><input type="number" name="quantity[]" min="0.01" step="0.01" class="form-control" required></td>
+  <td><button type="button" class="btn btn-danger btn-sm" onclick="this.closest('tr').remove()">✖</button></td>
+</tr>`;
+  table.insertAdjacentHTML("beforeend", row);
+}
+</script>
+
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-primary" type="submit">حفظ التعديلات</button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+{% endblock %}

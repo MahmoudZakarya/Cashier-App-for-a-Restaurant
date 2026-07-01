@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>طباعة المخزون</title>
+    <style>
+      /* Cairo Regular */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../fonts/Cairo-Regular.ttf") format("truetype");
+        font-weight: 400;
+        font-style: normal;
+      }
+
+      /* Cairo Bold */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../fonts/Cairo-Bold.ttf") format("truetype");
+        font-weight: 700;
+        font-style: normal;
+      }
+
+      /* Cairo Light */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../fonts/Cairo-Light.ttf") format("truetype");
+        font-weight: 300;
+        font-style: normal;
+      }
+
+      /* Cairo Medium */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../fonts/Cairo-Medium.ttf") format("truetype");
+        font-weight: 500;
+        font-style: normal;
+      }
+
+      /* Cairo SemiBold */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 600;
+        font-style: normal;
+      }
+
+      /* Cairo ExtraBold */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../fonts/Cairo-ExtraBold.ttf") format("truetype");
+        font-weight: 800;
+        font-style: normal;
+      }
+      body {
+        font-family: "Cairo", sans-serif;
+        text-align: center;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #333;
+        padding: 8px;
+      }
+      .total {
+        background: #d4ffd4;
+        font-weight: bold;
+      }
+      @media print {
+        button {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h2>📦 تقرير المخزون الحالي</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>الصنف</th>
+          <th>النوع</th>
+          <th>الكمية المتاحة</th>
+          <th>آخر سعر شراء</th>
+          <th>إجمالي القيمة</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in products %}
+        <tr>
+          <td>{{ p.name }}</td>
+          <td>{{ p.type }}</td>
+          <td>{{ p.quantity|round(3) }} {{ p.quantity_type }}</td>
+          <td>{{ p.buy_price|round(2) }} جنية</td>
+          <td>{{ (p.quantity * p.buy_price)|round(2) }} جنية</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr class="total">
+          <td colspan="3">إجمالي قيمة المخزون</td>
+          <td>{{ total_value }} جنية</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <button onclick="window.print()">🖨 طباعة</button>
+  </body>
+</html>

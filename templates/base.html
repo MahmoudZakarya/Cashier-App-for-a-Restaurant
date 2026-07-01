@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <meta http-equiv="Cache-Control" content="no-store" />
+    <!-- Local Bootstrap RTL -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/bootstrap.rtl.min.css') }}"
+    />
+
+    <!-- Your Custom Styles -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+
+    <title>مطبخ ظباط قوات الامن</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <a class="navbar-brand" href="/">
+          <img src="{{ url_for('static', filename='images/logo.png') }}" />
+          مطبخ ظباط قوات الامن
+        </a>
+
+
+        <div class="navbar-buttons">
+          <a href="/products">المخزن</a>
+          <a href="/purchases">المشتريات</a>
+          <a href="/consume">المصروفات</a>
+          <a href="/sales">المبيعات</a>
+          <a href="/menu">القائمة</a>
+          <a href="/safe">الخزنة</a>
+          <a href="/report">التقرير</a>
+        </div>
+
+        <!-- Dropdown Menu -->
+        <div class="dropdown">
+          <button
+            class="btn btn-secondary btn-sm dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+          >
+            {% if g.user %} {{ g.user.username }} {% else %} ▼ {% endif %}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end text-end">
+            {% if g.user %}
+            <li>
+              <span class="dropdown-item disabled"
+                >مرحبًا {{ g.user.username }}</span
+              >
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a class="dropdown-item" href="{{ url_for('logout') }}"
+                >تسجيل الخروج</a
+              >
+            </li>
+            {% else %}
+            <li>
+              <a class="dropdown-item" href="{{ url_for('login') }}"
+                >تسجيل الدخول</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="{{ url_for('signup') }}"
+                >إنشاء حساب</a
+              >
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-4">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div class="alert alert-{{category}}">{{message}}</div>
+      {% endfor %} {% endif %} {% endwith %} {% block content %}{% endblock %}
+    </div>
+
+    <footer class="app-footer mt-5 py-3 text-center">
+      <div class="container">
+        <div class="authors mt-2">
+            <div class="author">
+            <div class="name">خالص الشكر والفضل لمساهمة السيد القائد:</div>
+          </div>
+            <div class="author">
+            <div class="job">العقيد</div>
+            <div class="name">حازم التميمي</div>
+            <div class="job">مدير أدارة قوات أمن مطروح</div>
+          </div>
+          <div class="author">
+            <div class="job">مطوّر النظام - جندي مجند</div>
+            <div class="name">محمود محمد زكريا</div>
+            <div class="job">دفعة 7/2025</div>
+          </div>
+
+          </div>
+        </div>
+        <div class="copyright mt-4">&copy; 2025 مطبخ قوات الامن</div>
+      </div>
+    </footer>
+
+    <!-- Local Bootstrap JS -->
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+  </body>
+</html>

@@ -1,0 +1,77 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container-box">
+  <h3>المخزن</h3>
+
+  <table class="table table-bordered table-striped product-table text-center">
+    <thead>
+      <tr>
+        <th>الصنف</th>
+        <th>النوع</th>
+        <th>الكمية المتاحة</th>
+        <th>آخر سعر شراء</th>
+        <th>إجمالي قيمة المتاح</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% set ns = namespace(total_value=0) %} {% for p in products %} {% set
+      value = p.quantity * p.buy_price %} {% set ns.total_value = ns.total_value
+      + value %}
+      <tr
+        style="
+            {% if p.quantity < 3 %}
+                background-color: rgba(255, 0, 0, 0.1);
+            {% elif p.quantity >= 3 and p.quantity <= 10 %}
+                background-color: rgba(255, 255, 0, 0.1);
+            {% endif %}
+        "
+      >
+        <td>{{ p.name }}</td>
+        <td>{{ p.type }}</td>
+        <td>{{ p.quantity|round(3) }} {{ p.quantity_type }}</td>
+        <td>{{ p.buy_price|round(2) }} جنية</td>
+        <td>{{ value|round(2) }} جنية</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+
+    <!-- إجمالي المخزون -->
+    <tfoot>
+      <tr class="table-footer">
+        <th colspan="3">إجمالي قيمة المخزون</th>
+        <th>{{ ns.total_value|round(2) }} جنية</th>
+      </tr>
+    </tfoot>
+  </table>
+
+  <a
+    href="{{ url_for('print_warehouse') }}"
+    target="_blank"
+    class="btn btn-primary"
+    >🖨 طباعة المخزون</a
+  >
+</div>
+
+<script>
+  document.querySelectorAll("table th").forEach((header) => {
+    header.style.cursor = "pointer";
+    header.addEventListener("click", () => {
+      const table = header.closest("table");
+      const rows = Array.from(table.querySelectorAll("tbody tr"));
+      const index = Array.from(header.parentNode.children).indexOf(header);
+
+      const asc = header.dataset.asc === "true" ? false : true;
+      header.dataset.asc = asc;
+
+      rows.sort((a, b) => {
+        let x = a.children[index].innerText.replace(/[^\d.]/g, "");
+        let y = b.children[index].innerText.replace(/[^\d.]/g, "");
+        x = parseFloat(x) || a.children[index].innerText;
+        y = parseFloat(y) || b.children[index].innerText;
+        return asc ? (x > y ? 1 : -1) : x < y ? 1 : -1;
+      });
+
+      rows.forEach((r) => table.querySelector("tbody").appendChild(r));
+    });
+  });
+</script>
+{% endblock %}

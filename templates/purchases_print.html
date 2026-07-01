@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>تقرير المشتريات</title>
+
+    <style>/* Cairo Regular */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../static/fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 400;
+        font-style: normal;
+      }
+
+      /* Cairo Bold */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../static/fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 700;
+        font-style: normal;
+      }
+
+      /* Cairo Light */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../static/fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 300;
+        font-style: normal;
+      }
+
+      /* Cairo Medium */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../static/fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 500;
+        font-style: normal;
+      }
+
+      /* Cairo SemiBold */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../static/fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 600;
+        font-style: normal;
+      }
+
+      /* Cairo ExtraBold */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../static/fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 800;
+        font-style: normal;
+      }
+      body {
+        font-family: "Cairo", sans-serif;
+        padding: 20px;
+      }
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #444;
+        padding: 8px;
+        text-align: center;
+      }
+      th {
+        background: #f2f2f2;
+      }
+      .no-print {
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      @media print {
+        .no-print {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="no-print">
+      <button
+        onclick="window.print()"
+        style="padding: 8px 16px; font-size: 16px"
+      >
+        🖨 طباعة
+      </button>
+    </div>
+
+    <h2>تقرير المشتريات</h2>
+    <p>
+      <strong>من:</strong> {{ start }} &nbsp;&nbsp; <strong>إلى:</strong> {{ end
+      }}
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>الصنف</th>
+          <th>الكمية</th>
+          <th>سعر الوحدة</th>
+          <th>الإجمالي</th>
+          <th>المستخدم</th>
+          <th>التاريخ</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in purchases %}
+        <tr>
+          <td>{{ p.product.name }}</td>
+          <td>{{ p.quantity }} {{ p.product.quantity_type }}</td>
+          <td>{{ p.unit_price | round(2) }}</td>
+          <td>{{ p.total_cost | round(2) }}</td>
+          <td>{{ p.user.username }}</td>
+          <td>{{ p.date | ar_date }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p style="margin-top: 20px; text-align: center; font-size: 18px">
+      <strong>إجمالي تكلفة المشتريات:</strong>
+      {{ purchases | sum(attribute='total_cost') | round(2) }} جنية
+    </p>
+  </body>
+</html>

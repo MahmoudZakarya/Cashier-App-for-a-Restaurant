@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>تفاصيل الصنف - مطبخ الشرطة</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <h1>تفاصيل الصنف</h1>
+
+    <div class="product-card">
+      <p><strong>الرقم:</strong> {{ product.id }}</p>
+      <p><strong>الاسم:</strong> {{ product.name }}</p>
+      <p><strong>النوع:</strong> {{ product.type }}</p>
+      <p><strong>نوع الكمية:</strong> {{ product.quantity_type }}</p>
+      <p><strong>الكمية:</strong> {{ product.quantity }}</p>
+      <p><strong>سعر الشراء:</strong> {{ product.buy_price }}</p>
+      <p><strong>سعر البيع:</strong> {{ product.sale_price }}</p>
+    </div>
+
+    <br />
+    <a href="{{ url_for('products') }}" class="menu-btn"
+      >🔙 العودة إلى قائمة الأصناف</a
+    >
+  </body>
+</html>

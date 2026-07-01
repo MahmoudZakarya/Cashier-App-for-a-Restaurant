@@ -1,0 +1,306 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="container-box">
+  <h3 class="sales-header">نقطة البيع (الكاشير)</h3>
+
+  <!-- وجبات رئيسية -->
+  <h5 class="mb-2">🍽️ وجبات رئيسية</h5>
+  <div class="d-flex flex-wrap mb-3" style="gap: 8px">
+    {% for meal in meals if not meal.name.startswith("علبة") %}
+    <button class="btn btn-dark meal-btn" data-id="{{ meal.id }}">
+      {{ meal.name }}
+    </button>
+    {% endfor %}
+  </div>
+
+  <!-- إضافات -->
+  <h5 class="mb-2">➕ إضافات</h5>
+  <div class="d-flex flex-wrap mb-3" style="gap: 8px">
+    {% for meal in meals if meal.name.startswith("علبة") %}
+    <button class="btn btn-outline-secondary meal-btn" data-id="{{ meal.id }}">
+      {{ meal.name }}
+    </button>
+    {% endfor %}
+  </div>
+
+  <form class="sales-form" method="POST" action="/add_sale">
+    <table class="table table-bordered" id="saleTable">
+      <thead>
+        <tr>
+          <th>الكود</th>
+          <th>الوجبة</th>
+          <th>الوصف</th>
+          <th>السعر</th>
+          <th>حذف</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Rows added dynamically -->
+      </tbody>
+    </table>
+
+    <h4>الإجمالي: <span id="totalPrice">0</span> جنية</h4>
+    <input type="hidden" name="meal_ids" id="meal_ids" />
+    <input type="hidden" name="total_amount" id="total_amount" />
+    <div class="mb-3">
+      <label class="form-label">ملاحظة على الفاتورة:</label>
+      <input
+        type="text"
+        class="form-control"
+        name="note"
+        placeholder="مثال: بدون بصل / طلب خاص"
+      />
+    </div>
+    <div class="mb-3">
+      <label class="form-label">نوع العملية:</label><br />
+
+      <input type="radio" name="sale_type" value="normal" checked /> بيع عادي
+      <input type="radio" name="sale_type" value="return" /> مرتجع
+      <input type="radio" name="sale_type" value="damage" /> هالك
+    </div>
+
+    <button class="btn btn-primary sales-btn" type="submit">تسجيل بيع</button>
+  </form>
+</div>
+
+<div class="container-box">
+  <h3 class="sales-header">سجل مبيعات</h3>
+
+  <form
+    method="get"
+    action="/sales"
+    class="row g-2 sales-filter align-items-center"
+  >
+    <div class="col-auto">
+      <input
+        type="date"
+        name="from"
+        class="form-control"
+        value="{{ request.args.get('from', today) }}"
+      />
+    </div>
+
+    <div class="col-auto">
+      <input
+        type="date"
+        name="to"
+        class="form-control"
+        value="{{ request.args.get('to', today) }}"
+      />
+    </div>
+
+    <div class="col-auto form-check">
+      <input class="form-check-input" type="checkbox" name="type" value="normal"
+      {% if 'normal' in request.args.getlist('type') %}checked{% endif %}>
+      <label class="form-check-label">بيع</label>
+    </div>
+
+    <div class="col-auto form-check">
+      <input class="form-check-input" type="checkbox" name="type" value="return"
+      {% if 'return' in request.args.getlist('type') %}checked{% endif %}>
+      <label class="form-check-label">مرتجع</label>
+    </div>
+
+    <div class="col-auto form-check">
+      <input class="form-check-input" type="checkbox" name="type" value="damage"
+      {% if 'damage' in request.args.getlist('type') %}checked{% endif %}>
+      <label class="form-check-label">هالك</label>
+    </div>
+
+    <div class="col-auto">
+      <button class="btn btn-secondary">عرض</button>
+    </div>
+
+    <!-- ✅ زر طباعة -->
+    <div class="col-auto ms-auto">
+      <a
+        href="/print_sales?start={{ start }}&end={{ end }}&{{ request.query_string.decode() }}"
+        target="_blank"
+        class="btn btn-primary"
+        >طباعة التقرير</a
+      >
+    </div>
+  </form>
+
+  <table class="table table-sm table-bordered">
+    <thead>
+      <tr>
+        <th>الوصف</th>
+        <th>ملاحظة</th>
+        <th>المبلغ</th>
+        <th>المستخدم</th>
+        <th>التاريخ</th>
+        <th>النوع</th>
+        <th>الإيصال</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% set ns = namespace(total_sales_amount = 0) %} {% for s in sales %} {%
+      set ns.total_sales_amount = ns.total_sales_amount + s.total_amount %}
+      <tr
+        class="{% if s.sale_type == 'return' %} sale-return {% elif s.sale_type == 'damage' %} sale-damage {% endif %}"
+      >
+        <td>{{ s.description or 'مبيع وجبات' }}</td>
+        <td>{{ s.note or '-' }}</td>
+        <td>{{ s.total_amount }}</td>
+        <td>{{ s.user.username }}</td>
+        <td>{{ s.date|ar_date }}</td>
+        <td>
+          {% if s.sale_type == "normal" %} بيع {% elif s.sale_type == "return"
+          %} مرتجع {% elif s.sale_type == "damage" %} هالك {% endif %}
+        </td>
+        <td>
+          <a
+            href="/receipt/{{ s.id }}"
+            target="receiptWindow"
+            class="btn btn-sm btn-primary"
+            >فتح</a
+          >
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+
+    <!-- ✅ Total Sales Footer -->
+    <tfoot>
+      <tr class="table-footer">
+        <th colspan="2" class="text-center">إجمالي المبيعات للفترة المحددة</th>
+        <th colspan="3">{{ ns.total_sales_amount|round(2) }} جنية</th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<script>
+  const mealsData = {{ meals|tojson|safe }};
+  let saleList = [];
+  let table = document.querySelector("#saleTable tbody");
+  let totalPriceSpan = document.getElementById("totalPrice");
+
+  // Add new empty row for entering ID manually
+  function addEmptyRow() {
+      let row = table.insertRow();
+      let cellId = row.insertCell(0);
+      let cellName = row.insertCell(1);
+      let cellDesc = row.insertCell(2);
+      let cellPrice = row.insertCell(3);
+
+      cellId.innerHTML = `<input class="form-control meal-id-input" autofocus>`;
+  }
+
+  // Fill row after typing meal ID
+  function addMealById(mealId) {
+      let meal = mealsData.find(m => m.id == mealId);
+      if (!meal) return;
+
+      saleList.push(meal.id);
+
+      // Get the current input row (the last row)
+      let lastRow = table.querySelector("tr:last-child");
+
+      // Replace that row with meal details
+      lastRow.innerHTML = `
+          <td>${meal.id}</td>
+          <td>${meal.name}</td>
+          <td>${meal.description}</td>
+          <td>${meal.sale_price}</td>
+          <td><button class="btn btn-sm btn-danger remove-btn">✖</button></td>
+      `;
+
+      updateTotal();
+
+      // Add a fresh empty row for next input
+      addEmptyRow();
+  }
+
+  // Remove a meal row
+  table.addEventListener("click", function(e) {
+      if (e.target.classList.contains("remove-btn")) {
+          let row = e.target.closest("tr");
+          let id = row.cells[0].innerText;
+          saleList = saleList.filter(m => m != id);
+          row.remove();
+          updateTotal();
+      }
+  });
+
+
+  // Update total
+
+  function updateTotal() {
+      let total = 0;
+      saleList.forEach(id => {
+          let meal = mealsData.find(m => m.id == id);
+          total += parseFloat(meal.sale_price);
+      });
+      totalPriceSpan.innerText = total;
+      document.getElementById("total_amount").value = total;
+      document.getElementById("meal_ids").value = saleList.join(",");
+  }
+
+  // When typing manually (ID input)
+  document.addEventListener("keydown", function(e) {
+      if (e.target.classList.contains("meal-id-input") && e.key === "Enter") {
+          e.preventDefault();
+          let id = e.target.value.trim();
+          addMealById(id);
+      }
+  });
+
+  // When clicking meal buttons
+  // Meal Buttons
+  document.querySelectorAll(".meal-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+          addMealById(btn.dataset.id);
+      });
+  });
+
+  // Start with one input row
+  addEmptyRow();
+</script>
+
+<script>
+  const form = document.querySelector(".sales-form");
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault(); // stop normal submit
+
+    const formData = new FormData(form);
+    const popup = window.open("", "receiptWindow", "width=400,height=600"); // popup allowed because triggered by click
+
+    try {
+      const resp = await fetch("/add_sale", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await resp.json();
+
+      if (resp.ok) {
+        if (formData.get("sale_type") === "normal") {
+          // ✅ فقط البيع العادي يطبع إيصال
+          popup.location.href = `/receipt/${data.sale_id}`;
+          popup.onload = function () {
+            popup.print();
+          };
+        } else {
+          // ❌ مرتجع / هالك → لا إيصال
+          popup.close();
+        }
+
+        window.location.reload();
+        // reload page to update sales list
+      } else {
+        popup.close();
+        alert(data.error);
+      }
+    } catch (err) {
+      popup.close();
+      alert("حدث خطأ، حاول مرة أخرى");
+      console.error(err);
+    }
+  });
+</script>
+
+{% endblock %}

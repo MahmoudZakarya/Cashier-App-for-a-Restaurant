@@ -1,0 +1,27 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container-box">
+  <h2 class="text-center">لوحة التحكم</h2>
+  <hr />
+  <p>💰 رصيد الخزنة: <b>{{ safe_balance | round(2) }}</b> جنيه</p>
+  <p>📦 إجمالي المشتريات: <b>{{ total_purchases | round(2) }}</b> جنيه</p>
+  <p>🍽 إجمالي المبيعات: <b>{{ total_sales | round(2) }}</b> جنيه</p>
+  <p>
+    📉 ربح الاستهلاك:
+    <b
+      style="color: {% if profit_consumption >= 0 %}green{% else %}yellow{% endif %}"
+    >
+      {{ profit_consumption | round(2)}}
+    </b>
+    جنيه
+  </p>
+  <p>
+    📊 الربح التقديري:
+    <b
+      style="color: {% if profit_estimate >= 0 %}green{% else %}yellow{% endif %}"
+    >
+      {{ profit_estimate | round(2) }}
+    </b>
+    جنيه
+  </p>
+</div>
+{% endblock %}

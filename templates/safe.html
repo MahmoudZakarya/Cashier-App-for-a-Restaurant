@@ -1,0 +1,104 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container-box">
+  <h3>الخزنة</h3>
+
+  <p style="font-size: 1.3rem">
+    💰 الرصيد الحالي:
+    <b style="color: #f5cb5c"
+      >{{ safe.balance | round(3) + revenue_balance | round(3) }}</b
+    >
+    جنيه
+  </p>
+  <p>💵 رصيد الصناديق (Funds): <b>{{ safe.balance | round(3) }}</b> جنيه</p>
+  <p>
+    📈 رصيد المبيعات (Revenue): <b>{{ revenue_balance | round(3) }}</b> جنيه
+  </p>
+
+  <!-- Add funds -->
+  <form action="{{ url_for('add_funds') }}" method="post" class="row g-2 mt-3">
+    <input
+      name="amount"
+      class="form-control"
+      placeholder="المبلغ المراد إضافته"
+      type="number"
+      step="0.01"
+      required
+    />
+    <button class="btn btn-primary">إضافة رصيد</button>
+  </form>
+
+  <hr />
+
+  <!-- Withdraw funds -->
+  <h4 class="mt-4">سحب من الخزنة</h4>
+  <form action="{{ url_for('withdraw') }}" method="post" class="row g-2 mt-2">
+    <input
+      name="amount"
+      class="form-control mb-2"
+      placeholder="المبلغ المراد سحبه"
+      type="number"
+      step="0.01"
+      required
+    />
+    <input
+      name="note"
+      class="form-control mb-2"
+      placeholder="ملاحظة (اختياري)"
+      type="text"
+    />
+    <button class="btn btn-danger">سحب</button>
+  </form>
+  <hr />
+
+  <h4 class="mt-4">سجل الإضافات</h4>
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>المستخدم</th>
+        <th>المبلغ</th>
+        <th>التاريخ</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for fund in funds_added %}
+      <tr>
+        <td>{{ fund.user.username }}</td>
+        <td>{{ fund.amount }} جنيه</td>
+        <td>{{ fund.date|ar_date }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="3">لا توجد إضافات بعد</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <hr />
+
+  <h4 class="mt-4">سجل السحوبات</h4>
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>المستخدم</th>
+        <th>المبلغ</th>
+        <th>الملاحظة</th>
+        <th>التاريخ</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for w in withdrawals %}
+      <tr>
+        <td>{{ w.user.username }}</td>
+        <td>{{ w.amount }} جنيه</td>
+        <td>{{ w.note }}</td>
+        <td>{{ w.date|ar_date }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="4">لا توجد سحوبات بعد</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

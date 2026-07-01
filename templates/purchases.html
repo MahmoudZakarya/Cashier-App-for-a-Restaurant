@@ -1,0 +1,181 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container-box">
+  <h3>المشتريات</h3>
+
+  <form method="post" action="/add_purchase" class="row g-2 mb-3">
+    <!-- Product Name Dropdown / Input -->
+    <div class="input-group mb-2" id="product_name_group">
+      <select name="name" id="product_name" class="form-select" required>
+        {% for name in product_names %}
+        <option value="{{ name }}">{{ name }}</option>
+        {% endfor %}
+      </select>
+      <button
+        class="btn btn-outline-secondary"
+        type="button"
+        id="add_product_btn"
+      >
+        +
+      </button>
+    </div>
+
+    <!-- Product Type Dropdown / Input -->
+    <div class="input-group mb-2" id="product_type_group">
+      <select name="type" id="product_type" class="form-select">
+        <option value="">غير محدد</option>
+        {% for t in product_types %}
+        <option value="{{ t }}">{{ t }}</option>
+        {% endfor %}
+      </select>
+      <button class="btn btn-outline-secondary" type="button" id="add_type_btn">
+        +
+      </button>
+    </div>
+    <!-- Quantity Type Radio Buttons -->
+    <div class="col-12 mb-2">
+      <label class="form-label">وحدة القياس:</label><br />
+      <div class="form-check form-check-inline">
+        <input
+          class="form-check-input"
+          type="radio"
+          name="quantity_type"
+          id="qtype_kilo"
+          value="كيلو"
+        />
+        <label class="form-check-label" for="qtype_kilo">كيلو</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input
+          class="form-check-input"
+          type="radio"
+          name="quantity_type"
+          id="qtype_unit"
+          value="وحدة"
+        />
+        <label class="form-check-label" for="qtype_unit">وحدة</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input
+          class="form-check-input"
+          type="radio"
+          name="quantity_type"
+          id="qtype_liter"
+          value="لتر"
+        />
+        <label class="form-check-label" for="qtype_liter">لتر</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input
+          class="form-check-input"
+          type="radio"
+          name="quantity_type"
+          id="qtype_roll"
+          value="لفة"
+        />
+        <label class="form-check-label" for="qtype_roll">لفة</label>
+      </div>
+    </div>
+
+    <input name="quantity" class="form-control" placeholder="الكمية" required />
+    <input
+      name="unit_price"
+      class="form-control"
+      placeholder="السعر للوحدة"
+      required
+    />
+    <button class="btn btn-primary">تسجيل شراء</button>
+  </form>
+
+  <hr />
+  <!-- ✅ Date Filter -->
+  <form method="get" class="row g-2 my-3">
+    <div class="col-auto">
+      <label>من:</label>
+      <input type="date" name="from" class="form-control" value="{{ start }}" />
+    </div>
+    <div class="col-auto">
+      <label>إلى:</label>
+      <input type="date" name="to" class="form-control" value="{{ end }}" />
+    </div>
+    <div class="col-auto pt-4">
+      <button class="btn btn-secondary">عرض</button>
+    </div>
+
+    <div class="col-auto ms-auto pt-4">
+      <a
+        href="{{ url_for('print_purchases', start=start, end=end) }}"
+        target="_blank"
+        class="btn btn-primary"
+      >
+        🖨 طباعة المشتريات
+      </a>
+    </div>
+  </form>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>الصنف</th>
+        <th>كمية</th>
+        <th>سعر الوحدة</th>
+        <th>الإجمالي</th>
+        <th>المستخدم</th>
+        <th>التاريخ</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in purchases %}
+      <tr>
+        <td>{{ p.product.name }}</td>
+        <td>{{ p.quantity }} {{ p.product.quantity_type }}</td>
+        <td>{{ p.unit_price | round(2) }}</td>
+        <td>{{ p.total_cost | round(2) }}</td>
+        <td>{{ p.user.username }}</td>
+        <td>{{ p.date|ar_date }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="container-box mt-3 text-center">
+    <h5>
+      إجمالي تكلفة المشتريات: <strong>{{ total_cost | round(2) }} جنية</strong>
+    </h5>
+  </div>
+</div>
+
+<script>
+  function switchToInput(groupId, selectId, placeholder) {
+    const group = document.getElementById(groupId);
+    const sel = document.getElementById(selectId);
+    const input = document.createElement("input");
+    input.type = "text";
+    input.name = sel.name;
+    input.placeholder = placeholder;
+    input.className = "form-control";
+
+    const rollbackBtn = document.createElement("button");
+    rollbackBtn.type = "button";
+    rollbackBtn.className = "btn btn-outline-secondary";
+    rollbackBtn.innerHTML = "↩"; // rollback icon
+    rollbackBtn.onclick = () => {
+      group.replaceChild(sel, input);
+      sel.style.display = "block";
+      group.replaceChild(addBtn, rollbackBtn);
+      addBtn.style.display = "inline-block";
+    };
+
+    const addBtn = group.querySelector("button");
+    addBtn.style.display = "none";
+    group.replaceChild(input, sel);
+    group.appendChild(rollbackBtn);
+  }
+
+  document.getElementById("add_product_btn").addEventListener("click", () => {
+    switchToInput("product_name_group", "product_name", "اسم الصنف الجديد");
+  });
+
+  document.getElementById("add_type_btn").addEventListener("click", () => {
+    switchToInput("product_type_group", "product_type", "نوع الصنف الجديد");
+  });
+</script>
+
+{% endblock %}

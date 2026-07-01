@@ -1,0 +1,285 @@
+/* Cairo Regular */
+@font-face {
+  font-family: "Cairo";
+  src: url("../fonts/Cairo-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Cairo Bold */
+@font-face {
+  font-family: "Cairo";
+  src: url("../fonts/Cairo-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Cairo Light */
+@font-face {
+  font-family: "Cairo";
+  src: url("../fonts/Cairo-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+/* Cairo Medium */
+@font-face {
+  font-family: "Cairo";
+  src: url("../fonts/Cairo-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+/* Cairo SemiBold */
+@font-face {
+  font-family: "Cairo";
+  src: url("../fonts/Cairo-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+/* Cairo ExtraBold */
+@font-face {
+  font-family: "Cairo";
+  src: url("../fonts/Cairo-ExtraBold.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+input,
+button,
+select,
+textarea {
+  font-family: "Cairo", sans-serif;
+}
+
+body {
+  direction: rtl;
+  background-color: #0a2239;
+  color: #ffffff;
+  padding-bottom: 50px;
+}
+
+/* NAVBAR */
+.navbar {
+  background-color: #13293d;
+  padding: 14px;
+  border-bottom: none;
+}
+
+.navbar .container {
+  display: flex;
+  justify-content: space-around;
+}
+.navbar-brand {
+  color: #f5cb5c !important;
+  font-weight: 700;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+}
+.navbar-brand img {
+  height: 40px;
+  margin-left: 10px;
+}
+.navbar a {
+  color: #ffffff;
+  margin-left: 15px;
+  font-size: 1.3rem;
+  transition: 0.3s;
+  text-decoration: none;
+  font-weight: 700;
+}
+.navbar a:hover {
+  color: #f5cb5c !important;
+}
+
+.text-danger {
+  color: #740202;
+}
+
+/* CONTENT CARD */
+.container-box {
+  background-color: #13293d;
+  border-radius: 12px;
+  padding: 25px;
+  margin-top: 25px;
+  border: none;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+/* BUTTONS */
+.btn-primary {
+  background-color: #f5cb5c;
+  border: none;
+  color: #13293d;
+  font-weight: bold;
+}
+.btn-primary:hover {
+  background-color: #d4b24f;
+}
+
+.sales-btn {
+  margin-top: 8px;
+  align-self: flex-end;
+}
+
+.sales-form {
+  display: flex;
+  flex-direction: column;
+}
+/* TABLES */
+.table {
+  color: #fff;
+  text-align: center;
+  border-collapse: collapse;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+thead {
+  border: none;
+}
+.table thead th {
+  background-color: #0a2239;
+  font-weight: bold;
+  border: none;
+}
+tbody tr:hover td {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+}
+tbody td {
+  position: relative;
+  border: none;
+}
+tbody td:hover:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -9999px;
+  bottom: -9999px;
+  background-color: rgba(255, 255, 255, 0.2);
+  z-index: -1;
+}
+/* INPUTS */
+input,
+select,
+textarea {
+  background-color: #0a2239 !important;
+  border: none !important;
+  color: #fff !important;
+}
+
+.alert {
+  font-weight: bold;
+  text-align: center;
+}
+
+#saleTable th:first-child,
+#saleTable td:first-child {
+  width: 80px; /* Make ID column narrow */
+  text-align: center;
+}
+
+td {
+  padding: 15px;
+  background-color: #13293d;
+  color: #fff !important;
+  text-align: right;
+}
+th {
+  text-align: right;
+}
+
+/* Make products table text clearly visible */
+.product-table th,
+.product-table td {
+  color: white !important;
+}
+
+h3 {
+  margin-bottom: 32px;
+}
+
+h4 {
+  margin-bottom: 24px;
+}
+
+.sales-filter {
+  margin-bottom: 16px;
+}
+
+.btn-secondary {
+  color: #fff;
+  background-color: #0a2239;
+  font-weight: 600;
+  border: none;
+}
+
+label {
+  font-weight: 400;
+}
+
+.dropdown-item {
+  color: #0a2239 !important;
+  font-size: 16px !important;
+}
+
+.app-footer {
+  background-color: #0a2239; /* light gray background */
+  border-top: 1px solid #dee2e6;
+  font-family: "cairo", sans-serif;
+  font-size: 0.9rem;
+  color: #ffffff;
+}
+
+.app-footer .authors {
+  display: flex;
+  justify-content: center;
+  gap: 40px; /* space between authors */
+  flex-wrap: wrap;
+}
+
+.app-footer .author {
+  text-align: center;
+}
+
+.app-footer .job {
+  font-size: 0.8rem;
+  color: #6c757d; /* bootstrap text-muted color */
+  font-weight: 400;
+}
+
+.app-footer .name {
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.operations-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  gap: 4px;
+}
+.table-footer th {
+  background-color: #ffffff57 !important;
+}
+
+tbody tr.sale-return td {
+  background-color: rgba(255, 193, 7, 0.35) !important;
+  color: #fff !important;
+}
+
+tbody tr.sale-damage td {
+  background-color: rgba(220, 53, 69, 0.35) !important;
+  color: #fff !important;
+}

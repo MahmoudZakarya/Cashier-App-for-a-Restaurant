@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>طباعة تقرير المبيعات</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/bootstrap.rtl.min.css') }}"
+    />
+    <style>/* Cairo Regular */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../static/fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 400;
+        font-style: normal;
+      }
+
+      /* Cairo Bold */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../static/fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 700;
+        font-style: normal;
+      }
+
+      /* Cairo Light */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../static/fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 300;
+        font-style: normal;
+      }
+
+      /* Cairo Medium */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../static/fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 500;
+        font-style: normal;
+      }
+
+      /* Cairo SemiBold */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../static/fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 600;
+        font-style: normal;
+      }
+
+      /* Cairo ExtraBold */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../static/fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 800;
+        font-style: normal;
+      }
+      body {
+        font-family: "Cairo", sans-serif;
+        font-size: 14px;
+      }
+      .table {
+        width: 100%;
+      }
+    </style>
+  </head>
+
+  <body onload="window.print()">
+    <h3 class="text-center">تقرير المبيعات</h3>
+    <p class="text-center">{{ start }} → {{ end }}</p>
+
+    <table class="table table-bordered table-sm">
+      <thead>
+        <tr>
+          <th>الوصف</th>
+          <th>المبلغ</th>
+          <th>المستخدم</th>
+          <th>التاريخ</th>
+          <th>النوع</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for s in sales %}
+        <tr
+          class="{% if s.sale_type == 'return' %} bg-warning bg-opacity-25 {% elif s.sale_type == 'damage' %} bg-danger bg-opacity-25 {% endif %}"
+        >
+          <td>{{ s.description }}</td>
+          <td>{{ s.total_amount }}</td>
+          <td>{{ s.user.username }}</td>
+          <td>{{ s.date|ar_date }}</td>
+          <td>
+            {% if s.sale_type=='normal' %}بيع{% elif s.sale_type=='return'
+            %}مرتجع{% else %}هالك{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>

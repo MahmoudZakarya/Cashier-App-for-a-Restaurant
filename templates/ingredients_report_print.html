@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>تقرير المكونات المستهلكة</title>
+    <style>
+      /* Cairo Regular */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../static/fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 400;
+        font-style: normal;
+      }
+
+      /* Cairo Bold */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../static/fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 700;
+        font-style: normal;
+      }
+
+      /* Cairo Light */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../static/fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 300;
+        font-style: normal;
+      }
+
+      /* Cairo Medium */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../static/fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 500;
+        font-style: normal;
+      }
+
+      /* Cairo SemiBold */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../static/fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 600;
+        font-style: normal;
+      }
+
+      /* Cairo ExtraBold */
+      @font-face {
+        font-family: "Cairo";
+        src: url("../static/fonts/Cairo-SemiBold.ttf") format("truetype");
+        font-weight: 800;
+        font-style: normal;
+      }
+      body {
+        font-family: "Cairo", sans-serif;
+        direction: rtl;
+        width: 190mm;
+        margin: 0 auto;
+        background: #fff;
+      }
+
+      h2,
+      p {
+        text-align: center;
+        margin: 5px 0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+        font-size: 15px;
+      }
+
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 6px 8px;
+        text-align: center;
+      }
+
+      @media print {
+        button {
+          display: none;
+        }
+        @page {
+          margin: 10mm;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h2>تقرير المكونات المستهلكة</h2>
+    <p><strong>من:</strong> {{ start }} — <strong>إلى:</strong> {{ end }}</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>اسم المكون</th>
+          <th>الكمية المستهلكة</th>
+          <th>التكلفة</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ing in ingredients_usage %}
+        <tr>
+          <td>{{ ing.name }}</td>
+          <td>{{ ing.quantity | round(3) }} {{ ing.quantity_type }}</td>
+          <td>{{ ing.cost | round(2) }} جنية</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <button onclick="window.print()">🖨 طباعة</button>
+  </body>
+</html>

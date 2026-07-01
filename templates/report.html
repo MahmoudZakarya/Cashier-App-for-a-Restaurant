@@ -1,0 +1,161 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="container-box">
+  <h3>تقرير الأرباح</h3>
+
+  <form method="get" class="row g-2 my-3">
+    <div class="col-auto">
+      <label>من:</label>
+      <input type="date" name="from" class="form-control" value="{{ start }}" />
+    </div>
+    <div class="col-auto">
+      <label>إلى:</label>
+      <input type="date" name="to" class="form-control" value="{{ end }}" />
+    </div>
+    <div class="col-auto pt-4">
+      <button class="btn btn-secondary">عرض</button>
+    </div>
+  </form>
+
+  <table class="table table-bordered text-center">
+    <tr>
+      <th>إجمالي المبيعات</th>
+      <td>{{ total_sales | round(2) }} جنية</td>
+    </tr>
+    <tr>
+      <th>تكلفة المكونات المستهلكة</th>
+      <td>{{ cost_of_sales | round(2) }} جنية</td>
+    </tr>
+    <tr class="table-success">
+      <th>الربح الصافي الحقيقي</th>
+      <td><strong>{{ profit_real | round(2) }} جنية</strong></td>
+    </tr>
+  </table>
+</div>
+
+<div class="container-box mt-4">
+  <h3>المكونات المستهلكة</h3>
+
+  <form method="get" class="row g-2 my-3">
+    <div class="col-auto">
+      <label>من:</label>
+      <input type="date" name="from" class="form-control" value="{{ start }}" />
+    </div>
+    <div class="col-auto">
+      <label>إلى:</label>
+      <input type="date" name="to" class="form-control" value="{{ end }}" />
+    </div>
+    <div class="col-auto pt-4">
+      <button class="btn btn-secondary">عرض</button>
+    </div>
+    <!-- ✅ Print Button -->
+    <div class="col-auto ms-auto pt-4">
+      <a
+        href="{{ url_for('print_ingredients_report', start=start, end=end) }}"
+        target="_blank"
+        class="btn btn-primary"
+      >
+        🖨 طباعة التقرير
+      </a>
+    </div>
+  </form>
+
+  <table class="table table-bordered text-center">
+    <thead>
+      <tr>
+        <th>اسم المكون</th>
+        <th>الكمية المستهلكة</th>
+        <th>تكلفة المكون</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ing in ingredients_usage %}
+      <tr>
+        <td>{{ ing.name }}</td>
+        <td>{{ ing.quantity | round(3)}} {{ ing.quantity_type }}</td>
+        <td>{{ ing.cost | round(2) }} جنية</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="container-box mt-3 text-center">
+    <h5>
+      إجمالي تكلفة الاستهلاك:
+      <strong>{{ total_ing_cost | round(2) }} جنية</strong>
+    </h5>
+  </div>
+</div>
+
+<div class="container-box mt-4">
+  <h3>حركة المخزن</h3>
+
+  <form method="get" class="row g-2 my-3">
+    <div class="col-auto">
+      <label>من:</label>
+      <input type="date" name="from" class="form-control" value="{{ start }}" />
+    </div>
+    <div class="col-auto">
+      <label>إلى:</label>
+      <input type="date" name="to" class="form-control" value="{{ end }}" />
+    </div>
+    <div class="col-auto pt-4">
+      <button class="btn btn-secondary">عرض</button>
+    </div>
+    <!-- Print button -->
+    <div class="col-auto ms-auto pt-4">
+      <a
+        href="{{ url_for('print_warehouse_report', start=start, end=end) }}"
+        target="_blank"
+        class="btn btn-primary"
+      >
+        🖨 طباعة التقرير
+      </a>
+    </div>
+  </form>
+
+  <table class="table table-bordered text-center">
+    <thead>
+      <tr>
+        <th>اسم المنتج</th>
+        <th>المنصرف</th>
+        <th>المشتريات</th>
+        <th>الموجود في المخزن</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for w in warehouse_movement %}
+      <tr>
+        <td>{{ w.name }}</td>
+        <td>{{ w.consumed | round(3) }} {{ w.quantity_type }}</td>
+        <td>{{ w.bought | round(3) }} {{ w.quantity_type }}</td>
+        <td>{{ w.remaining | round(3) }} {{ w.quantity_type }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<script>
+  document.querySelectorAll("table th").forEach((header) => {
+    header.style.cursor = "pointer";
+    header.addEventListener("click", () => {
+      const table = header.closest("table");
+      const rows = Array.from(table.querySelectorAll("tbody tr"));
+      const index = Array.from(header.parentNode.children).indexOf(header);
+
+      const asc = header.dataset.asc === "true" ? false : true;
+      header.dataset.asc = asc;
+
+      rows.sort((a, b) => {
+        let x = a.children[index].innerText.replace(/[^\d.]/g, "");
+        let y = b.children[index].innerText.replace(/[^\d.]/g, "");
+        x = parseFloat(x) || a.children[index].innerText;
+        y = parseFloat(y) || b.children[index].innerText;
+        return asc ? (x > y ? 1 : -1) : x < y ? 1 : -1;
+      });
+
+      rows.forEach((r) => table.querySelector("tbody").appendChild(r));
+    });
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container-box">
+  <h3>إنشاء حساب جديد</h3>
+  <form method="post">
+    <input
+      type="text"
+      name="username"
+      placeholder="اسم المستخدم"
+      required
+      class="form-control mb-2"
+    />
+    <input
+      type="password"
+      name="password"
+      placeholder="كلمة المرور"
+      required
+      class="form-control mb-2"
+    />
+    <button class="btn btn-primary">إنشاء الحساب</button>
+  </form>
+  <p class="mt-2">
+    لديك حساب؟ <a href="{{ url_for('login') }}">تسجيل الدخول</a>
+  </p>
+</div>
+{% endblock %}
